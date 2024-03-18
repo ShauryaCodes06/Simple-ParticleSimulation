@@ -3,7 +3,7 @@ import random
 import math
 
 
-''' Basc Variables And Game Window Initialization'''
+''' Basic Variables And Game Window Initialization'''
 
 width, height = 800, 800                       
 win = pg.display.set_mode((width, height)) 
