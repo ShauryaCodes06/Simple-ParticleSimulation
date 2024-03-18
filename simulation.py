@@ -2,7 +2,10 @@ import pygame as pg
 import random 
 import math
 
-width, height = 800, 800 
+
+''' Basc Variables And Game Window Initialization'''
+
+width, height = 800, 800                       
 win = pg.display.set_mode((width, height)) 
 pg.display.set_caption("Particle Simulation")
 particle_radius = 3 
@@ -11,18 +14,18 @@ clock = pg.time.Clock()
 no_of_particles = 100
 fps = 60 
 G = 10
-temperature = 273
+temperature = 273           # Temperature (in Kelvins [K])
 factor = 7 * 1/273
-speed_limit = temperature * factor
+speed_limit = temperature * factor  # Adding a speed limit so particles dont break, also so that max speed changes with temperature
 
 class Particle: 
-    def __init__(self, mass, pos, vel_x, vel_y): 
+    def __init__(self, mass, pos, vel_x, vel_y):  # Initialization Of Particles Class
         self.mass = mass 
         self.pos = pos 
         self.vel_x = vel_x 
         self.vel_y = vel_y 
 
-    def get_color(self):
+    def get_color(self):        # Function for changing the color of particle according to it's speed
         velocity_magnitude = math.sqrt(self.vel_x ** 2 + self.vel_y ** 2)
         max_velocity = speed_limit
         min_velocity = 0
@@ -33,12 +36,12 @@ class Particle:
         return color
 
     def draw(self): 
-        try:
+        try:            # I have added a Try-Except condition so that particles with undefined behaviour are colored yellow and don't crash the simulation
             pg.draw.circle(win, self.get_color(), tuple(self.pos), particle_radius)
         except:
             pg.draw.circle(win, 'yellow', tuple(self.pos), particle_radius)
 
-    def move(self, particles):
+    def move(self, particles):      # Movement Function with gravitational forces b/w particles
         for particle in particles:
             if particle != self:
                 dist_x = particle.pos[0] - self.pos[0]
@@ -57,14 +60,14 @@ class Particle:
                     self.vel_y = speed_limit
         self.pos[0] += self.vel_x
         self.pos[1] += self.vel_y
-        if self.pos[0] >= width - particle_radius or self.pos[0] <= particle_radius:
+        if self.pos[0] >= width - particle_radius or self.pos[0] <= particle_radius:  # Conditions to bounce particles back once they hit the walls
             self.vel_x = -self.vel_x
-        if self.pos[1] >= height - particle_radius or self.pos[1] <= particle_radius:
+        if self.pos[1] >= height - particle_radius or self.pos[1] <= particle_radius:   # Same As Above
             self.vel_y = -self.vel_y
 
         self.handle_collision(particles)
 
-    def handle_collision(self, particles):
+    def handle_collision(self, particles):      # Function to handle collision b/w particles
         for particle in particles:
             if particle != self:
                 dx = particle.pos[0] - self.pos[0]
@@ -87,10 +90,10 @@ class Particle:
 def main(): 
     running = True 
     particles = []
-    for j in range(no_of_particles): 
+    for j in range(no_of_particles):    # Adding Bunch Of Particles At random locations
         p = Particle(particle_mass, [random.randint(0 + particle_radius, width - particle_radius), random.randint(0 + particle_radius, height - particle_radius)], random.randint(-5,5), random.randint(-5,5)) 
         particles.append(p)
-    while running: 
+    while running:      # Main game-loop
         clock.tick(fps) 
         win.fill('black') 
 
@@ -98,11 +101,11 @@ def main():
             if event.type == pg.QUIT: 
                 running = False 
 
-        for particle in particles:
+        for particle in particles: # Moving and drawing each particle and also iterationg over each of them to calculate gravitational forces
             particle.move(particles)
             particle.draw()
 
-        pg.display.flip()
+        pg.display.flip() # Updating the display each frame
 
 if __name__ == '__main__': 
     main()
